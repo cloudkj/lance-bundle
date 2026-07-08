@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lance-bundle"
+version = "0.0.1"
+description = "Portable, self-contained embedding and vector database bundles."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "cloudkj", email = "cloudkj@users.noreply.github.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 1 - Planning",
+]
+
+[project.urls]
+Homepage = "https://github.com/cloudkj/lance-bundle"
