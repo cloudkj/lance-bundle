@@ -1,0 +1,8 @@
+services:
+  # Local development container environment
+  dev:
+    build: .
+    volumes:
+      - .:/app
+    command: /bin/bash
+    tty: true

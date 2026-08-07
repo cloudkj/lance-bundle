@@ -15,8 +15,35 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Development Status :: 1 - Planning",
+    "Development Status :: 2 - Pre-Alpha",
+]
+dependencies = [
+    "lancedb",
+    "pyarrow",
+    "onnxruntime",
+    "tokenizers",
+    "numpy"
+]
+
+[project.optional-dependencies]
+export = [
+    "torch",
+    "transformers",
+    "onnxscript",
+    "optimum[onnxruntime]",
+    "sentence-transformers"
+]
+hub = [
+    "huggingface_hub"
+]
+test = [
+    "pytest>=7.0",
+    "sentence-transformers",
+    "torch"
 ]
 
 [project.urls]
 Homepage = "https://github.com/cloudkj/lance-bundle"
+
+[project.scripts]
+lance-bundle = "lance_bundle.cli:main"
