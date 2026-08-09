@@ -1,13 +1,12 @@
-lance-bundle -  Portable Embeddings
+lance-bundle - Portable Embeddings
 ===================================
 
 ### _Embed Once, Query Forever_
 
-`lance-bundle` is a library and opinionated packaging format for portable, self-contained bundles of embedding vectors
-and models for local-first, forwards-compatible use across AI and information retrieval.
-
-The process of loading and querying embeddings is built on top of LanceDB and the ONNX runtime, and designed to be
-lightweight in terms of dependencies to allow for use in embedded, edge, and local environments.
+`lance-bundle` packages embedding vectors and the model that produced them into a single portable file - load it
+and query it anywhere, with no server, no database to run, and no re-embedding your data on a new machine. Built on
+LanceDB and ONNX for a minimal dependency footprint, it's equally at home embedded in an app, on the edge, or in a
+local script.
 
 ## Quick Start
 
@@ -86,14 +85,14 @@ lance-bundle search berkshire.zip "What does Buffett think of Coca-Cola?" --limi
 The initial version of `lance-bundle` is limited to support for `SentenceTransformer` embedding models and embedding
 vectors stored in LanceDB. While these underlying technologies may change in the future, the aim will always be to
 preserve the spirit of the portable, forwards-compatible design of `lance-bundle` and allow for supporting new and
-different ways of computing, storing, and searching embedding spaces indefinitely into the future.
+different ways of computing and storing embeddings along with vector search.
 
 #### Sentence Transformer
 
-By design, the Sentence Transformers models from HF are exported to ONNX with only the transformers modules. The
-[pooling and normalization modules](https://github.com/huggingface/sentence-transformers/blob/main/sentence_transformers/sentence_transformer/modules/pooling.py#L70-L326) are not included in the export, and thus need to be applied as a post-processing step.
-This is an additional benefit to using this library to import an ONNX-exported sentence transformer for embeddings as
-that post-processing step also gets included into the bundle.
+By design, the Sentence Transformers models from HuggingFace are exported to ONNX with only the transformers modules. The
+[pooling and normalization modules](https://github.com/huggingface/sentence-transformers/blob/main/sentence_transformers/sentence_transformer/modules/pooling.py#L70-L326) are not included in the export, and thus need to be applied as a post-processing step;
+`lance-bundle` ensures that the post-processing pooling and normalization steps are also included as part of the
+portable package.
 
 See: 
 * https://github.com/huggingface/sentence-transformers/issues/3258
