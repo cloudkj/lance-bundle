@@ -11,6 +11,8 @@ lightweight in terms of dependencies to allow for use in embedded, edge, and loc
 
 ## Quick Start
 
+Installation: `pip install lance-bundle`
+
 Import readily available embedding datasets from HuggingFace ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
 
 ```python
@@ -64,6 +66,19 @@ while True:
         messages=[{'role': 'user', 'content': prompt.format(context=context, query=query)}]
     )
     print(response.message.content)
+```
+
+## CLI
+
+```bash
+# Download a bundle from the HuggingFace dataset registry
+lance-bundle download lance-bundle/berkshire-hathaway-letters -o berkshire.zip
+
+# Inspect a bundle's metadata (model, dataset, provenance)
+lance-bundle inspect berkshire.zip
+
+# Search a bundle without writing any Python
+lance-bundle search berkshire.zip "What does Buffett think of Coca-Cola?" --limit 10 --json
 ```
 
 ## Implementation
