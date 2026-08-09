@@ -1,5 +1,21 @@
+import os
 import zipfile
-from lance_bundle import load, save, ExportDataset
+import pytest
+import lance_bundle.runtime as runtime
+from lance_bundle import load, load_dataset, save, ExportDataset
+from lance_bundle.export import LanceBundleBuilder
+
+@pytest.fixture
+def fake_download_snapshot(monkeypatch, dummy_model, dummy_data):
+    """Stubs out the HF Hub network call: builds a real bundle directly into
+    dest_dir (mirroring what a real snapshot_download would leave on disk),
+    so load_dataset() can be tested without any network access."""
+    texts, vectors = dummy_data
+
+    def _fake_download(dataset_name, dest_dir):
+        LanceBundleBuilder(dest_dir).build(dummy_model, ExportDataset(texts, vectors))
+
+    monkeypatch.setattr(runtime, "_download_snapshot", _fake_download)
 
 def test_load_bundle_from_directory(dummy_model, dummy_data, tmp_path):
     texts, vectors = dummy_data
@@ -65,3 +81,24 @@ def test_load_bundle_search_returns_metadata_when_present(dummy_model, dummy_dat
         assert isinstance(result["_distance"], float)
         assert len(result["vector"]) == 4
         assert result["metadata"] == expected_metadata_by_text[result["text"]]
+
+def test_load_dataset_downloads_and_loads(fake_download_snapshot, dummy_data):
+    texts, _ = dummy_data
+
+    bundle = load_dataset("fake-org/fake-dataset")
+
+    assert bundle.metadata()["data"]["rows"] == len(texts)
+    results = bundle.search("Dummy query for plumbing test", limit=len(texts))
+    assert len(results) == len(texts)
+
+def test_load_dataset_writes_output_path(fake_download_snapshot, dummy_data, tmp_path):
+    texts, _ = dummy_data
+    output_path = str(tmp_path / "downloaded.zip")
+
+    bundle = load_dataset("fake-org/fake-dataset", output_path=output_path)
+    assert bundle.metadata()["data"]["rows"] == len(texts)
+
+    # The archived zip is written and independently loadable
+    assert os.path.exists(output_path)
+    archived_bundle = load(output_path)
+    assert archived_bundle.metadata()["data"]["rows"] == len(texts)
