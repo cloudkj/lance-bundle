@@ -87,3 +87,14 @@ def test_save_bundle_data_roundtrip(dummy_model, dummy_data, tmp_path):
     assert arrow_table["text"].to_pylist() == texts
     for actual_vector, expected_vector in zip(arrow_table["vector"].to_pylist(), vectors):
         assert actual_vector == pytest.approx(expected_vector)
+
+def test_export_dataset_preconditions(dummy_data):
+    with pytest.raises(ValueError):
+        ExportDataset([], [])
+
+    texts, vectors = dummy_data
+    with pytest.raises(ValueError):
+        ExportDataset(texts, vectors[:-1])
+
+    with pytest.raises(ValueError):
+        ExportDataset(texts, vectors, metadata=[{}])

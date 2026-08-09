@@ -15,12 +15,10 @@ class ExportDataset:
     source: Optional[str] = None
 
     def __post_init__(self):
-        assert (
-            len(self.texts) > 0 and len(self.texts) == len(self.vectors)
-        ), "Precondition: texts and vectors must be non-empty and of equal length"
-        assert (
-            self.metadata is None or len(self.metadata) == len(self.texts)
-        ), "Precondition: metadata, if provided, must be the same length as texts and vectors"
+        if not (len(self.texts) > 0 and len(self.texts) == len(self.vectors)):
+            raise ValueError("texts and vectors must be non-empty and of equal length")
+        if self.metadata is not None and len(self.metadata) != len(self.texts):
+            raise ValueError("metadata, if provided, must be the same length as texts and vectors")
 
 def save_data(data_path: str, dataset: ExportDataset):
     # Build the payload columnar-first
