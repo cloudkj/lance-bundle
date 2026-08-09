@@ -1,8 +1,10 @@
 services:
   # Local development container environment
   dev:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     volumes:
-      - .:/app
+      - ..:/app
     command: /bin/bash
     tty: true
