@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 from typing import Optional, Union
 import zipfile
 import tempfile
@@ -125,6 +126,17 @@ class LanceBundle:
         query_builder = self._table.search(vector).distance_type(self._distance_type).limit(limit)
         return query_builder.to_list()
 
+def _download_snapshot(dataset_name: str, dest_dir: str) -> None:
+    try:
+        from huggingface_hub import snapshot_download
+    except ImportError as e:
+        raise ImportError("load_dataset requires the 'hub' extra: pip install lance-bundle[hub]") from e
+    snapshot_download(
+        repo_id=dataset_name,
+        repo_type="dataset",
+        local_dir=dest_dir,
+    )
+
 def load(bundle_path: str) -> LanceBundle:
     """
     Loads a LanceBundle from a local path.
@@ -137,7 +149,7 @@ def load(bundle_path: str) -> LanceBundle:
     """
     return LanceBundle(bundle_path)
 
-def load_dataset(dataset_name: str) -> LanceBundle:
+def load_dataset(dataset_name: str, output_path: Optional[str] = None) -> LanceBundle:
     """
     Downloads a bundle dataset from the Hugging Face Hub and loads it as a LanceBundle.
 
@@ -147,23 +159,20 @@ def load_dataset(dataset_name: str) -> LanceBundle:
 
     Args:
         dataset_name: Hugging Face Hub dataset repo id, e.g. "org/dataset-name".
+        output_path: If given, the downloaded bundle contents are also archived as a `.zip` file at this path.
 
     Returns:
         The downloaded and loaded LanceBundle, ready to search.
     """
-    try:
-        from huggingface_hub import snapshot_download
-    except ImportError as e:
-        raise ImportError("load_dataset requires the 'hub' extra: pip install lance-bundle[hub]") from e
-
     temp_dir = tempfile.TemporaryDirectory()
     try:
-        snapshot_download(
-            repo_id=dataset_name,
-            repo_type="dataset",
-            local_dir=temp_dir.name,
-        )
+        _download_snapshot(dataset_name, temp_dir.name)
+        # Load the bundle before archiving, so a broken download never gets persisted
+        bundle = LanceBundle(temp_dir)
+        if output_path is not None:
+            base_name, _ = os.path.splitext(output_path)
+            shutil.make_archive(base_name, 'zip', temp_dir.name)
     except Exception:
         temp_dir.cleanup()
         raise
-    return LanceBundle(temp_dir)
+    return bundle
