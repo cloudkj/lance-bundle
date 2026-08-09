@@ -1,7 +1,6 @@
 import os
 import json
 import pytest
-import tempfile
 import torch
 import torch.nn as nn
 from unittest.mock import MagicMock
@@ -94,8 +93,3 @@ def dummy_data():
         [0.9, 0.9, 0.9, 0.9]
     ]
     return texts, vectors
-
-@pytest.fixture(scope="session")
-def temp_bundle_path():
-    with tempfile.TemporaryDirectory() as temp_dir:
-        yield os.path.join(temp_dir, "test_bundle.zip")

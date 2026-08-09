@@ -2,11 +2,12 @@ import pytest
 from lance_bundle import load, save, ExportDataset
 
 @pytest.fixture
-def populated_bundle_path(dummy_model, dummy_data, temp_bundle_path):
+def populated_bundle_path(dummy_model, dummy_data, tmp_path):
     """Fixture that compiles a live bundle specifically for runtime tests."""
     texts, vectors = dummy_data
-    save(dummy_model, ExportDataset(texts, vectors), temp_bundle_path)
-    return temp_bundle_path
+    bundle_path = str(tmp_path / "bundle.zip")
+    save(dummy_model, ExportDataset(texts, vectors), bundle_path)
+    return bundle_path
 
 def test_lance_bundle_initialization_and_metadata(populated_bundle_path):
     # Test successful extraction and mounting
