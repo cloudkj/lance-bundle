@@ -11,18 +11,18 @@ from docling.chunking import HybridChunker
 from transformers import AutoTokenizer
 from lance_bundle import save, ExportDataset
 
-# Stop PyTorch from fighting itself over CPU cores
+# PyTorch concurrency
 os.environ["OMP_NUM_THREADS"] = "4"
 os.environ["MKL_NUM_THREADS"] = "4"
-# Silence another common HuggingFace warning
+# HuggingFace warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-# Fetch Berkshire Hathaway letter URLs
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
 }
 
+# Berkshire Hathaway shareholder letter source urls
 letter_urls = [
     "https://www.berkshirehathaway.com/letters/1977.html",
     "https://www.berkshirehathaway.com/letters/1978.html",
@@ -91,9 +91,8 @@ converter = DocumentConverter(
 )
 chunker = HybridChunker(tokenizer=custom_tokenizer)
 
-# 4. Process, Chunk, and Embed
+# Process, chunk, embed
 knowledge_base = []
-
 with tempfile.TemporaryDirectory() as temp_dir:
     for url in tqdm(letter_urls):
         print(f"Processing: {url}")
@@ -111,9 +110,8 @@ with tempfile.TemporaryDirectory() as temp_dir:
             file_ext = ".pdf" if is_pdf else ".html"
             temp_file_path = os.path.join(temp_dir, f"temp_letter{file_ext}")
 
-            # 2. FIX: Route saving logic based on file type
             if is_pdf:
-                # PDFs are binary files; write raw bytes directly
+                # Write PDF binary files directly
                 with open(temp_file_path, "wb") as f:
                     f.write(doc_response.content)
             else:
@@ -123,28 +121,24 @@ with tempfile.TemporaryDirectory() as temp_dir:
                     f.write(clean_html)
 
             result = converter.convert(temp_file_path)
-
             chunks = list(chunker.chunk(result.document))
             chunk_texts = [chunk.text for chunk in chunks]
-
             if not chunk_texts:
                 continue
 
             embeddings = model.encode(chunk_texts).tolist()
-
             for text, vector in zip(chunk_texts, embeddings):
                 knowledge_base.append(
                     {"source": url, "text": text, "embedding": vector}
                 )
-
         except Exception as e:
             print(f"Skipping {url} due to error: {e}")
 
 print(f"Success! Generated {len(knowledge_base)} structure-aware embeddings.")
 
 save(
-    model,
-    ExportDataset(
+    model=model,
+    dataset=ExportDataset(
         [k["text"] for k in knowledge_base],
         [k["embedding"] for k in knowledge_base],
         metadata=[{"source_url": k["source"]} for k in knowledge_base],
@@ -152,5 +146,5 @@ save(
         description="Berkshire Hathaway Shareholder Letters 1977-2024",
         source="https://www.berkshirehathaway.com/letters/letters.html",
     ),
-    "examples/berkshire_hathaway_letters.zip",
+    output_path="examples/berkshire_hathaway_letters.zip",
 )
