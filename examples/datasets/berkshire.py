@@ -1,6 +1,7 @@
 import requests
 import os
 import tempfile
+from pathlib import Path
 from urllib.parse import urljoin
 from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
@@ -146,5 +147,5 @@ save(
         description="Berkshire Hathaway Shareholder Letters 1977-2024",
         source="https://www.berkshirehathaway.com/letters/letters.html",
     ),
-    output_path="examples/berkshire_hathaway_letters.zip",
+    output_path=str(Path(__file__).resolve().parent / "berkshire_hathaway_letters.zip"),
 )
