@@ -7,6 +7,10 @@ COPY README.md .
 COPY src/ ./src/
 COPY examples/ ./examples/
 
+# hatch-vcs needs a real git checkout to derive a version; this image only gets
+# a copy of the source tree, so give it a placeholder version instead.
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0.dev0
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     jq \
