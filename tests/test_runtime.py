@@ -1,4 +1,5 @@
 import os
+import sys
 import zipfile
 import pytest
 import lance_bundle.runtime as runtime
@@ -102,3 +103,10 @@ def test_load_dataset_writes_output_path(fake_download_snapshot, dummy_data, tmp
     assert os.path.exists(output_path)
     archived_bundle = load(output_path)
     assert archived_bundle.metadata()["data"]["rows"] == len(texts)
+
+def test_download_snapshot_requires_hub_extra(monkeypatch):
+    # Force HuggingFace dependecy import to fail
+    monkeypatch.setitem(sys.modules, "huggingface_hub", None)
+
+    with pytest.raises(ImportError, match="hub"):
+        runtime._download_snapshot("fake-org/fake-dataset", "/tmp/unused")
