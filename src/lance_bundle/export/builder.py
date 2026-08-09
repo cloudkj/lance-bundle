@@ -12,7 +12,7 @@ from .data import ExportDataset, save_data
 from .model import save_model
 
 _PACKAGE_NAME = "lance_bundle"
-_MANIFEST_SCHEMA_VERSION = "0.0.1"
+_MANIFEST_SCHEMA_VERSION = "1.0"
 
 class LanceBundleBuilder:
 
