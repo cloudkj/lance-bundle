@@ -3,12 +3,17 @@ lance-bundle - Portable Embeddings
 
 ### _Embed Once, Query Forever_
 
+[![PyPI Version](https://img.shields.io/pypi/v/lance-bundle)](https://pypi.org/project/lance-bundle/)
+[![PyPI Python Version](https://img.shields.io/pypi/pyversions/lance-bundle)](https://pypi.org/project/lance-bundle/)
+
 `lance-bundle` packages embedding vectors and the model that produced them into a single portable file - load it
 and query it anywhere, with no server, no database to run, and no re-embedding your data on a new machine. Built on
 LanceDB and ONNX for a minimal dependency footprint, it's equally at home embedded in an app, on the edge, or in a
 local script.
 
-## Quick Start
+## Usage
+
+### Quick Start
 
 Installation: `pip install lance-bundle`
 
@@ -37,13 +42,7 @@ bundle = load("bundle.zip")
 bundle.search("I'm hungry for some science")
 ```
 
-## Goals
-
-1. Portability: you own your data and embeddings; store and search them forever into the future
-2. Reusability: stop re-embedding the internet; a shared dataset registry allows compressed and indexed knowledge to be used interchangeably
-3. Provenance: each self-contained bundle contains metadata, lineage, and the exact model artifact used for generating the data
-
-## Examples
+### Local RAG Example
 
 Add RAG to a local LLM by loading a precomputed bundled embedding dataset from HuggingFace
 ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
@@ -67,7 +66,7 @@ while True:
     print(response.message.content)
 ```
 
-## CLI
+### CLI
 
 ```bash
 # Download a bundle from the HuggingFace dataset registry
@@ -80,7 +79,15 @@ lance-bundle inspect berkshire.zip
 lance-bundle search berkshire.zip "What does Buffett think of Coca-Cola?" --limit 10 --json
 ```
 
-## Implementation
+## Design
+
+### Goals
+
+1. **Portability**: you own your data and embeddings; store and search them forever into the future
+2. **Reusability**: stop re-embedding the internet; a shared dataset registry allows compressed and indexed knowledge to be used interchangeably
+3. **Provenance**: each self-contained bundle contains metadata, lineage, and the exact model artifact used for generating the data
+
+### Implementation
 
 The initial version of `lance-bundle` is limited to support for `SentenceTransformer` embedding models and embedding
 vectors stored in LanceDB. While these underlying technologies may change in the future, the aim will always be to
