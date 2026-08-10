@@ -13,17 +13,21 @@ local script.
 
 ## Usage
 
-### Quick Start
+### Loading Bundles
 
-Installation: `pip install lance-bundle`
+Install: `pip install lance-bundle` (or `pip install lance-bundle[hub]` if loading bundles from HuggingFace hub)
 
-Import readily available embedding datasets from HuggingFace ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
+Import and load locally or from readily available embedding datasets on HuggingFace ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
 
 ```python
 from lance_bundle import load_dataset
 bundle = load_dataset("lance-bundle/berkshire-hathaway-letters")
 bundle.search("What does Warren Buffett think of Coca-Cola and car insurance?")
 ```
+
+### Exporting Bundles
+
+Install: `pip install lance-bundle[export]`
 
 Export documents and embeddings to a local archive file (zip), then load as needed for queries:
 
@@ -53,7 +57,7 @@ import ollama
 
 bundle = load_dataset("lance-bundle/paul-graham-essays")
 
-prompt = "You are a Silicon Valley angel investor and ventural capitalist. Provide advice and answers based ONLY on the provided context. If the answer cannot be found in the context, say 'I don't know'. Context: {context} Question: {query}"
+prompt = "You are a Silicon Valley angel investor and venture capitalist. Provide advice and answers based ONLY on the provided context. If the answer cannot be found in the context, say 'I don't know'. Context: {context} Question: {query}"
 
 while True:
     print("> ", end="")
@@ -92,7 +96,7 @@ lance-bundle search berkshire.zip "What does Buffett think of Coca-Cola?" --limi
 The initial version of `lance-bundle` is limited to support for `SentenceTransformer` embedding models and embedding
 vectors stored in LanceDB. While these underlying technologies may change in the future, the aim will always be to
 preserve the spirit of the portable, forwards-compatible design of `lance-bundle` and allow for supporting new and
-different ways of computing and storing embeddings along with vector search.
+different ways of computing, storing, and searching embeddings.
 
 #### Sentence Transformer
 
