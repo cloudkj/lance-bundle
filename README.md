@@ -13,17 +13,23 @@ local script.
 
 ## Usage
 
-### Quick Start
+### Loading Bundles
 
-Installation: `pip install lance-bundle`
+Install: `pip install lance-bundle`
 
-Import readily available embedding datasets from HuggingFace ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
+If loading bundles from Hugging Face: `pip install lance-bundle[hub]`
+
+Import and load locally or from readily available embedding datasets ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
 
 ```python
 from lance_bundle import load_dataset
 bundle = load_dataset("lance-bundle/berkshire-hathaway-letters")
 bundle.search("What does Warren Buffett think of Coca-Cola and car insurance?")
 ```
+
+### Exporting Bundles
+
+Install: `pip install lance-bundle[export]`
 
 Export documents and embeddings to a local archive file (zip), then load as needed for queries:
 
@@ -44,8 +50,9 @@ bundle.search("I'm hungry for some science")
 
 ### Local RAG Example
 
-Add RAG to a local LLM by loading a precomputed bundled embedding dataset from HuggingFace
-([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
+Add RAG to a local LLM by loading a precomputed bundled embedding dataset
+([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)). Example
+using Ollama:
 
 ```python
 from lance_bundle import load_dataset
@@ -53,7 +60,7 @@ import ollama
 
 bundle = load_dataset("lance-bundle/paul-graham-essays")
 
-prompt = "You are a Silicon Valley angel investor and ventural capitalist. Provide advice and answers based ONLY on the provided context. If the answer cannot be found in the context, say 'I don't know'. Context: {context} Question: {query}"
+prompt = "You are a Silicon Valley angel investor and venture capitalist. Provide advice and answers based ONLY on the provided context. If the answer cannot be found in the context, say 'I don't know'. Context: {context} Question: {query}"
 
 while True:
     print("> ", end="")
@@ -69,7 +76,7 @@ while True:
 ### CLI
 
 ```bash
-# Download a bundle from the HuggingFace dataset registry
+# Download a bundle from the Hugging Face dataset registry
 lance-bundle download lance-bundle/berkshire-hathaway-letters -o berkshire.zip
 
 # Inspect a bundle's metadata (model, dataset, provenance)
@@ -92,11 +99,11 @@ lance-bundle search berkshire.zip "What does Buffett think of Coca-Cola?" --limi
 The initial version of `lance-bundle` is limited to support for `SentenceTransformer` embedding models and embedding
 vectors stored in LanceDB. While these underlying technologies may change in the future, the aim will always be to
 preserve the spirit of the portable, forwards-compatible design of `lance-bundle` and allow for supporting new and
-different ways of computing and storing embeddings along with vector search.
+different ways of computing, storing, and searching embeddings.
 
 #### Sentence Transformer
 
-By design, the Sentence Transformers models from HuggingFace are exported to ONNX with only the transformers modules. The
+By design, the Sentence Transformers models from Hugging Face are exported to ONNX with only the transformers modules. The
 [pooling and normalization modules](https://github.com/huggingface/sentence-transformers/blob/main/sentence_transformers/sentence_transformer/modules/pooling.py#L70-L326) are not included in the export, and thus need to be applied as a post-processing step;
 `lance-bundle` ensures that the post-processing pooling and normalization steps are also included as part of the
 portable package.
