@@ -15,9 +15,11 @@ local script.
 
 ### Loading Bundles
 
-Install: `pip install lance-bundle` (or `pip install lance-bundle[hub]` if loading bundles from HuggingFace hub)
+Install: `pip install lance-bundle`
 
-Import and load locally or from readily available embedding datasets on HuggingFace ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
+If loading bundles from Hugging Face: `pip install lance-bundle[hub]`
+
+Import and load locally or from readily available embedding datasets ([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
 
 ```python
 from lance_bundle import load_dataset
@@ -48,8 +50,9 @@ bundle.search("I'm hungry for some science")
 
 ### Local RAG Example
 
-Add RAG to a local LLM by loading a precomputed bundled embedding dataset from HuggingFace
-([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)):
+Add RAG to a local LLM by loading a precomputed bundled embedding dataset
+([huggingface.co/lance-bundle](https://huggingface.co/lance-bundle)). Example
+using Ollama:
 
 ```python
 from lance_bundle import load_dataset
@@ -73,7 +76,7 @@ while True:
 ### CLI
 
 ```bash
-# Download a bundle from the HuggingFace dataset registry
+# Download a bundle from the Hugging Face dataset registry
 lance-bundle download lance-bundle/berkshire-hathaway-letters -o berkshire.zip
 
 # Inspect a bundle's metadata (model, dataset, provenance)
@@ -100,7 +103,7 @@ different ways of computing, storing, and searching embeddings.
 
 #### Sentence Transformer
 
-By design, the Sentence Transformers models from HuggingFace are exported to ONNX with only the transformers modules. The
+By design, the Sentence Transformers models from Hugging Face are exported to ONNX with only the transformers modules. The
 [pooling and normalization modules](https://github.com/huggingface/sentence-transformers/blob/main/sentence_transformers/sentence_transformer/modules/pooling.py#L70-L326) are not included in the export, and thus need to be applied as a post-processing step;
 `lance-bundle` ensures that the post-processing pooling and normalization steps are also included as part of the
 portable package.
